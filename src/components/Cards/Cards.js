@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Grid } from "@material-ui/core";
 import CountUp from "react-countup";
 import styles from "./Card.module.css";
 import cx from "classnames";
+import axios from "axios";
 
-const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
-  if (!confirmed) {
-    return "Loading...";
+const Cards = () => {
+  const [totalConfirmed, setTotalConfirmed] = useState(0);
+  const [totalRecovered, setTotalRecovered] = useState(0);
+  const [totalDeaths, setTotalDeaths] = useState(0);
+  const [date, setDate] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      setLoading(false);
+      const url = "https://api.covid19api.com/summary";
+      const { data } = await axios.get(url);
+      setTotalConfirmed(data.Global.TotalConfirmed);
+      setTotalRecovered(data.Global.TotalRecovered);
+      setTotalDeaths(data.Global.TotalDeaths);
+      setDate(data.Global.Date);
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <h1>Loading...</h1>;
   }
   return (
     <div className={styles.container}>
@@ -25,13 +46,13 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
             <Typography variant="h5">
               <CountUp
                 start={0}
-                end={confirmed.value}
+                end={totalConfirmed}
                 duration={1.55}
                 separator=","
               />
             </Typography>
             <Typography color="textSecondary">
-              {new Date(lastUpdate).toDateString()}
+              {new Date(date).toDateString()}
             </Typography>
             <Typography variaant="body2">
               Number of active cases of COVID-19
@@ -52,13 +73,13 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
             <Typography variant="h5">
               <CountUp
                 start={0}
-                end={recovered.value}
+                end={totalRecovered}
                 duration={1.55}
                 separator=","
               />
             </Typography>
             <Typography color="textSecondary">
-              {new Date(lastUpdate).toDateString()}
+              {new Date(date).toDateString()}
             </Typography>
             <Typography variaant="body2">
               Number of recoveries from COVID-19
@@ -79,13 +100,13 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
             <Typography variant="h5">
               <CountUp
                 start={0}
-                end={deaths.value}
+                end={totalDeaths}
                 duration={1.55}
                 separator=","
               />
             </Typography>
             <Typography color="textSecondary">
-              {new Date(lastUpdate).toDateString()}
+              {new Date(date).toDateString()}
             </Typography>
             <Typography variaant="body2">
               Number of deaths caused by COVID-19
