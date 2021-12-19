@@ -20,7 +20,6 @@ const Cards = () => {
       const { data } = await axios.get(url);
       setTotalConfirmed(data.Global.TotalConfirmed);
       setTotalRecovered(data.Global.TotalRecovered);
-
       setTotalDeaths(data.Global.TotalDeaths);
       setDate(data.Global.Date);
     };
