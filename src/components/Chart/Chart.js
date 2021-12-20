@@ -5,22 +5,11 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "./Chart.module.css";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement);
 
 const Chart = ({ yAxis, xAxis }) => {
   return (

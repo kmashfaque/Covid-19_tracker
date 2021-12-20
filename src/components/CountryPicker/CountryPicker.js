@@ -93,7 +93,7 @@ const CountryPicker = () => {
         totalRecovered={totalRecovered}
         totalDeaths={totalDeaths}
       />
-      <FormControl gutterBottom>
+      <FormControl>
         <NativeSelect defaultValue="" onChange={handleCountryChange}>
           <option value="global">Global</option>
           {countries.map((country) => (
