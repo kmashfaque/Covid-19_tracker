@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { NativeSelect, FormControl } from "@material-ui/core";
+import Cards from "../Cards/Cards";
 import styles from "./CountryPicker.module.css";
 import axios from "axios";
+import Chart from "../Chart/Chart";
 
 const CountryPicker = () => {
   const [countries, setCountries] = useState([]);
   const [days, setDays] = useState(7);
+  const [coronaCount, setCoronaCount] = useState([]);
+  const [covidSummery, setCovidSummery] = useState({});
+  const [totalConfirmed, setTotalConfirmed] = useState(0);
+  const [totalRecovered, setTotalRecovered] = useState(0);
+  const [totalDeaths, setTotalDeaths] = useState(0);
+  const [label, setLabel] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = "https://api.covid19api.com/summary";
+      const { data } = await axios.get(url);
+      setTotalConfirmed(data.Global.TotalConfirmed);
+      setTotalRecovered(data.Global.TotalRecovered);
+      setTotalDeaths(data.Global.TotalDeaths);
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchAPI = async () => {
       const url = "https://api.covid19api.com/summary";
       const { data } = await axios.get(url);
+
       setCountries(data.Countries);
+      setCovidSummery(data);
     };
 
     fetchAPI();
@@ -28,7 +49,7 @@ const CountryPicker = () => {
   const handleCountryChange = (e) => {
     const d = new Date();
     const to = formatDate(d);
-    const from = formatDate(d.setDate(d.getDate() - 6));
+    const from = formatDate(d.setDate(d.getDate() - days + 1));
     // console.log(from, to);
     coronaReportByDateRange(e.target.value, from, to);
   };
@@ -38,7 +59,21 @@ const CountryPicker = () => {
       const res = await axios.get(
         `https://api.covid19api.com/country/${countrySlug}/status/confirmed?from=${from}T00:00:00Z&to=${to}T00:00:00Z`
       );
+
+      const yAxisCoronaCount = res.data.map((d) => d.Cases);
+      setCoronaCount(yAxisCoronaCount);
+
+      const covidDetails = covidSummery.Countries.find(
+        (country) => country.Slug === countrySlug
+      );
+
+      const xAxisLabel = res.data.map((d) => d.Date);
       console.log(res.data);
+      console.log(xAxisLabel);
+      setTotalConfirmed(covidDetails.TotalConfirmed);
+      setTotalRecovered(covidDetails.TotalRecovered);
+      setTotalDeaths(covidDetails.TotalDeaths);
+      setLabel(xAxisLabel);
     } catch (error) {
       console.error(error);
     }
@@ -49,6 +84,11 @@ const CountryPicker = () => {
   };
   return (
     <>
+      <Cards
+        totalConfirmed={totalConfirmed}
+        totalRecovered={totalRecovered}
+        totalDeaths={totalDeaths}
+      />
       <FormControl>
         <NativeSelect defaultValue="" onChange={handleCountryChange}>
           <option value="global">Global</option>
@@ -66,6 +106,7 @@ const CountryPicker = () => {
           <option value="90">Last 90 days</option>
         </NativeSelect>
       </FormControl>
+      <Chart yAxis={coronaCount} xAxis={label} />
     </>
   );
 };

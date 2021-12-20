@@ -5,10 +5,7 @@ import styles from "./Card.module.css";
 import cx from "classnames";
 import axios from "axios";
 
-const Cards = () => {
-  const [totalConfirmed, setTotalConfirmed] = useState(0);
-  const [totalRecovered, setTotalRecovered] = useState(0);
-  const [totalDeaths, setTotalDeaths] = useState(0);
+const Cards = ({ totalRecovered, totalConfirmed, totalDeaths }) => {
   const [date, setDate] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -18,9 +15,7 @@ const Cards = () => {
       setLoading(false);
       const url = "https://api.covid19api.com/summary";
       const { data } = await axios.get(url);
-      setTotalConfirmed(data.Global.TotalConfirmed);
-      setTotalRecovered(data.Global.TotalRecovered);
-      setTotalDeaths(data.Global.TotalDeaths);
+
       setDate(data.Global.Date);
     };
     fetchData();
