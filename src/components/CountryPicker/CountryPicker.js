@@ -14,6 +14,7 @@ const CountryPicker = () => {
   const [totalRecovered, setTotalRecovered] = useState(0);
   const [totalDeaths, setTotalDeaths] = useState(0);
   const [label, setLabel] = useState([]);
+  const [country, setCountry] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,12 +69,12 @@ const CountryPicker = () => {
       );
 
       const xAxisLabel = res.data.map((d) => d.Date);
-      console.log(res.data);
-      console.log(xAxisLabel);
+
       setTotalConfirmed(covidDetails.TotalConfirmed);
       setTotalRecovered(covidDetails.TotalRecovered);
       setTotalDeaths(covidDetails.TotalDeaths);
       setLabel(xAxisLabel);
+      setCountry(countrySlug);
     } catch (error) {
       console.error(error);
     }
@@ -84,12 +85,15 @@ const CountryPicker = () => {
   };
   return (
     <>
+      <h1 className={styles.countryName}>
+        {country ? country : "Global Corona Report"}
+      </h1>
       <Cards
         totalConfirmed={totalConfirmed}
         totalRecovered={totalRecovered}
         totalDeaths={totalDeaths}
       />
-      <FormControl>
+      <FormControl gutterBottom>
         <NativeSelect defaultValue="" onChange={handleCountryChange}>
           <option value="global">Global</option>
           {countries.map((country) => (
